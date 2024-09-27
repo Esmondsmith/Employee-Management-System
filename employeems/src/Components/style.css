@@ -1,0 +1,38 @@
+.loginPage {
+    background: url('images/emp2.jpg');
+    background: linear-gradient(rgba(11,11,11,0.5), rgba(10,10,10,0.5), url('images/emp2.jpg'));
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 100% 120%;
+}
+
+.loginForm {
+    background-color: rgba(1, 32, 93, 0.6);
+    color: white;
+    padding: 30px;
+}
+
+.category-wrapper {
+    padding: 25px;
+}
+.employee-wrapper {
+    padding: 25px;
+}
+
+/* Styling for password visibility eye & eyeslash */
+.adjust-eye-div {
+    position: relative;
+}
+.adjust-eye {
+    position: absolute;
+    top: 28px;
+    right: 10px;
+    border: none;
+    background-color: transparent;
+}
+
+.employee-img {
+    width: 100px;
+    height: 100px;
+    border-radius: 20px;
+}
