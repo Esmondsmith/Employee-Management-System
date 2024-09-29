@@ -39,7 +39,6 @@ router.get('/category', (req, res) => {
         return res.json({Status: true, Result: result})
      })
 })
-
 //Creating API for adding category
 router.post('/add_category', (req, res) => {
     //console.log(req.body);
@@ -49,6 +48,24 @@ router.post('/add_category', (req, res) => {
             return res.json({Status: true})
      })
 })
+//API to delete a category
+router.delete('/delete_category/:id', (req, res) => {
+    const id = req.params.id;
+    //First Check if any employees are associated with this category
+    const checkEmployees = "SELECT * FROM employee WHERE category_id = ?";
+    con.query(checkEmployees, [id], (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+        if (result.length > 0) {
+            return res.json({ Status: false, Error: "Cannot delete category as there's employees for this category." });
+        }
+        // Proceed with category deletion
+        const deleteCategory = "DELETE FROM category WHERE id = ?";
+        con.query(deleteCategory, [id], (err, result) => {
+            if (err) return res.json({ Status: false, Error: "Query Error: " + err });
+            return res.json({ Status: true, Result: result });
+        });
+    });
+});
 
 
 //Handling the image upload
@@ -149,6 +166,14 @@ router.get('/admin_count', (req, res) => {
 //employee_count API
 router.get('/employee_count', (req, res) => {
     const sql = "SELECT COUNT(id) AS employee FROM employee"
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+     })
+})
+//category_count API to get total category and display on the dashboard homepage.
+router.get('/category_count', (req, res) => {
+    const sql = "SELECT COUNT(name) AS category FROM category"
     con.query(sql, (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
         return res.json({Status: true, Result: result})

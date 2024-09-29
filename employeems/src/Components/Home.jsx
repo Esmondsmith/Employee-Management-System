@@ -1,11 +1,14 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom';
 
 const Home = () => {
 
   const [adminTotal, setAdminTotal] = useState(0);
   const [employeeTotal, setEmployeeTotal] = useState(0);
   const [salaryTotal, setSalaryTotal] = useState(0);
+  const [categoryTotal, setCategoryTotal] = useState(0);
+
   const [admins, setAdmins] = useState([])
 
   //To fetch the data in order to display the total number of employee, we will use useEffect.
@@ -14,6 +17,7 @@ const Home = () => {
     employeeCount();
     salaryCount();
     adminRecords();
+    categoryCount();
   },[])
 
   //Function for to get number of admin
@@ -49,6 +53,17 @@ const Home = () => {
       }
     })
   }
+  //Function for to get number of categories
+  const categoryCount = () => { //We then call this method inside useEffect.
+    axios.get('http://localhost:3000/auth/category_count') //We go to backend to create this API.
+    .then(result => {
+      if(result.data.Status){
+        setCategoryTotal(result.data.Result[0].category)
+      } else {
+
+      }
+    })
+  }
 
 
   const adminRecords = () => {
@@ -75,15 +90,34 @@ const Home = () => {
               <h5 className='fw-bolder'>Total:</h5>
               <h5 className='text-primary fw-bolder'> {adminTotal} </h5>
             </div>
+            <div className='mt-4'>
+                <Link to={'/dasboard'} className="btn btn-primary">View List</Link>
+            </div>
         </div>
         <div className='px-3 pt-2 pb-4 border shadow-sm w-25'>
             <div className='text-center pb-1'>
-                <h4>Employee</h4>
+                <h4>Employees</h4>
             </div>
             <hr />
             <div className='d-flex justify-content-between'>
               <h5 className='fw-bolder'>Total:</h5>
               <h5 className='text-primary fw-bolder'> {employeeTotal} </h5>
+            </div>
+            <div className='mt-4'>
+                <Link to={'/dasboard/employee'} className="btn btn-primary">View List</Link>
+            </div>
+        </div>
+        <div className='px-3 pt-2 pb-4 border shadow-sm w-25'>
+            <div className='text-center pb-1'>
+                <h4>Categories</h4>
+            </div>
+            <hr />
+            <div className='d-flex justify-content-between'>
+              <h5 className='fw-bolder'>Total:</h5>
+              <h5 className='text-primary fw-bolder'> {categoryTotal} </h5>
+            </div>
+            <div className='mt-4'>
+                <Link to={'/dasboard/category'} className="btn btn-primary">View List</Link>
             </div>
         </div>
         <div className='px-3 pt-2 pb-4 border shadow-sm w-25'>
@@ -94,6 +128,9 @@ const Home = () => {
             <div className='d-flex justify-content-between'>
               <h5 className='fw-bolder'>Total:</h5>
               <h5 className='text-primary fw-bolder'> &#8358; {salaryTotal} </h5>
+            </div>
+            <div className='mt-4'>
+                <Link to={'/dasboard/employee'} className="btn btn-primary">View List</Link>
             </div>
         </div>
       </div>

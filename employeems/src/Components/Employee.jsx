@@ -28,7 +28,7 @@ const Employee = () => {
         window.location.reload(); //This will reload our page after deleting a record.
       } else {
         alert(result.data.Error)
-      }
+      };
     })
   }
 
@@ -55,10 +55,10 @@ const Employee = () => {
               {
                 employee.map(singleEmployee => (
                   <tr>
-                    <td>{singleEmployee.name}</td>
+                    <td> <Link to={`/dasboard/employee_details/`+singleEmployee.id} className='text-decoration-none'> {singleEmployee.name}</Link></td>
                     <td>{singleEmployee.email}</td>
                     <td>{singleEmployee.address}</td>
-                    <td>{singleEmployee.salary}</td>
+                    <td>&#8358;{singleEmployee.salary}</td>
                     <td> <img src={`http://localhost:3000/images/` + singleEmployee.image} alt="" className='employee-img'/> </td>
                     {/* To access our server-side in our frontend, we go to the index.js and use the "public" folder */}
                     <td>

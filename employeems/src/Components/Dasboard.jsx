@@ -7,16 +7,23 @@ const Dasboard = () => {
 
   const navigate = useNavigate();
 
-  axios.defaults.withCredentials = true; //This is to
+  axios.defaults.withCredentials = true; //This help clear all cookies from the browser on logout. 
 
   const handleLogout = () => {
-    axios.get('http://localhost:3000/auth/logout')
-    .then(result => {
-      if(result.data.Status){
-        navigate('/adminlogin')
-      }
-    })
+    // Display confirmation alert
+    const userConfirmed = window.confirm("Are you sure you want to log out?");
+    // If the user clicked "OK," proceed with logout
+    if (userConfirmed) {
+        axios.get('http://localhost:3000/auth/logout')
+        .then(result => {
+            if(result.data.Status){
+                navigate('/adminlogin');
+            }
+        })
+        .catch(error => console.error("Logout error:", error));
+    }
   }
+
 
 
   return (
@@ -54,7 +61,7 @@ const Dasboard = () => {
                   className='nav-link text-white px-0 align-middle'
                   >
                     <i className='fs-4 bi-columns ms-2'></i>
-                    <span className='ms-2 d-none d-sm-inline'>Job Category</span>
+                    <span className='ms-2 d-none d-sm-inline'>Category</span>
                   </Link>
                 </li>
                 <li className='w-100'>
