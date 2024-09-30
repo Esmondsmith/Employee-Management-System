@@ -14,6 +14,8 @@ import EditEmployee from './Components/EditEmployee'
 import EmployeeDetails from './Components/EmployeeDetails'
 import Start from './Components/Start'
 import EmployeeLogin from './Components/EmployeeLogin'
+import AddTask from './Components/AddTask'
+
 
 
 
@@ -34,6 +36,7 @@ function App() {
             <Route path='/dasboard/add_category' element={<AddCategory />}></Route> 
             <Route path='/dasboard/add_employee' element={<AddEmployee />}></Route>
             <Route path='/dasboard/edit_employee/:id' element={<EditEmployee />}></Route>
+            <Route path='/dasboard/add_task/:id' element={<AddTask />}></Route>
         </Route>
 
       </Routes>

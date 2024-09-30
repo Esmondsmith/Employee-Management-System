@@ -6,6 +6,10 @@
     background-size: 100% 120%;
 }
 
+.bg-color {
+    background-color: #124076;
+}
+
 .loginForm {
     background-color: rgba(1, 32, 93, 0.6);
     color: white;

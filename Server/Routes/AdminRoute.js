@@ -195,7 +195,7 @@ router.get('/admin_records', (req, res) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
         return res.json({Status: true, Result: result})
      })
-})
+});
 
 
 router.get('/logout', (req, res) => {
