@@ -20,6 +20,24 @@ const Employee = () => {
   }, [])//After this, we will move to AdminRoute to fetch all Employees.
 
 
+  const [categories, setCategories] = useState([]); // State to store categories
+  useEffect(() => {
+    axios.get('http://localhost:3000/auth/category')
+      .then(result => {
+        if (result.data.Status) {
+          setCategories(result.data.Result);
+        } else {
+          alert(result.data.Error);
+        }
+      }).catch(err => console.log(err));
+  }, []);
+  // Function to get category name by category_id
+  const getCategoryName = (categoryId) => {
+    const category = categories.find(cat => cat.id === categoryId);
+    return category ? category.name : 'Unknown Profession';
+  };
+
+
   //To handle delete of an employee
   const handleDelete = (id) =>{
     axios.delete('http://localhost:3000/auth/delete_employee/'+id)
@@ -47,6 +65,7 @@ const Employee = () => {
                 <th>Email</th>
                 <th>Address</th>
                 <th>Salary</th>
+                <th>Profession</th>
                 <th>Photos</th>
                 <th>Action</th>
               </tr>
@@ -55,11 +74,12 @@ const Employee = () => {
               {
                 employee.map(singleEmployee => (
                   <tr>
-                    <td> <Link to={`/dasboard/employee_details/`+singleEmployee.id} className='text-decoration-none'> {singleEmployee.name}</Link></td>
+                    <td>{singleEmployee.name}</td>
                     <td>{singleEmployee.email}</td>
                     <td>{singleEmployee.address}</td>
                     <td>&#8358;{singleEmployee.salary}</td>
-                    <td> <img src={`http://localhost:3000/images/` + singleEmployee.image} alt="" className='employee-img'/> </td>
+                    <td>{getCategoryName(singleEmployee.category_id)}</td> {/* Display category name */}
+                    <td> <img src={`http://localhost:3000/images/` + singleEmployee.image} alt="" className='employee-img'/></td>
                     {/* To access our server-side in our frontend, we go to the index.js and use the "public" folder */}
                     <td>
                       <Link to={`/dasboard/edit_employee/`+singleEmployee.id} className='btn btn-info me-2'>Edit</Link>

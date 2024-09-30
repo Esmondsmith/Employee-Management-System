@@ -205,4 +205,4 @@ router.get('/logout', (req, res) => {
 })
 
 
-export {router as adminRouter}
+export {router as AdminRouter}

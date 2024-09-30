@@ -17,7 +17,7 @@ const Dasboard = () => {
         axios.get('http://localhost:3000/auth/logout')
         .then(result => {
             if(result.data.Status){
-                navigate('/adminlogin');
+                navigate('/home');
             }
         })
         .catch(error => console.error("Logout error:", error));

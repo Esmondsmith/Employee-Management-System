@@ -5,7 +5,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Eye, EyeOff } from 'lucide-react'
 
-const Login = () => {
+
+    
+const EmployeeLogin = () => {
 
     const [showPassword, setShowPassword] = useState(false) //For password visibility.
         const passwordVisibility = (inputField) => {
@@ -30,10 +32,10 @@ const Login = () => {
  
     function handleSubmit(event) {
         event.preventDefault();
-        axios.post('http://localhost:3000/auth/adminlogin', values) //axios.post to post our data. It take the URI of the server/port we are using from our server side, and the initial state of our variable.
+        axios.post('http://localhost:3000/employee/employeelogin', values) //axios.post to post our data. It take the URI of the server/port we are using from our server side, and the initial state of our variable.
         .then(result => {
              if(result.data.loginStatus){
-                navigate('/dasboard');    
+                navigate('/employee_details/'+result.data.id);    
              } else {
                 setError(result.data.Error);
              }
@@ -41,14 +43,13 @@ const Login = () => {
         .catch(err => console.log(err))
     }
 
-
   return (
     <div className='d-flex justify-content-center align-items-center vh-100 loginPage'>
         <div className='P-3 rounded w-25 border loginForm'>
             <div className='text-danger'>
                 {error && error}
             </div>
-            <h2 className=''>Login, Admin.</h2>
+            <h2 className=''>Login, Employee.</h2>
             <form onSubmit={handleSubmit}>
                 <div className='mb-2'>
                     <label htmlFor="email"><strong>Email:</strong></label>
@@ -79,4 +80,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default EmployeeLogin
