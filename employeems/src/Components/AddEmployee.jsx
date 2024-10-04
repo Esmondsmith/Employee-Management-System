@@ -16,7 +16,7 @@ const AddEmployee = () => {
         image: ""
     });
 
-    //Because we need the category here to populate the employee category select dropddown on the form.
+    //Because we need the category here to populate the employee category select dropdown on the form.
     const [category, setCategory] = useState([])
         useEffect( ()=>{
         axios.get('http://localhost:3000/auth/category')

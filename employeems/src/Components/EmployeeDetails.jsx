@@ -38,6 +38,23 @@ const EmployeeDetails = () => {
     return category ? category.name : 'Unknown Profession';
   };
 
+  // const [task, setTask] = useState([]); // State to store task
+  // useEffect(() => {
+  //   axios.get('http://localhost:3000/auth/task')
+  //     .then(result => {
+  //       if (result.data.Status) {
+  //         setTask(result.data.Result);
+  //       } else {
+  //         alert(result.data.Error);
+  //       }
+  //     }).catch(err => console.log(err));
+  // }, []);
+  // // Function to get category name by category_id
+  // const getTaskDesc = (taskId) => {
+  //   const taskss = task.find(tsk => tsk.id === taskId);
+  //   return taskss ? taskss.description : 'No Task';
+  // };
+
 
   const handleLogout = () => {
     const userConfirmed = window.confirm("Are you sure you want to log out?");
@@ -127,10 +144,11 @@ const EmployeeDetails = () => {
                         {/* <li className="list-group-item"><strong>Task:</strong>  </li> */}
                     </ul>
                     <div className="card-footer text-center">
-                    <button className="btn btn-primary me-2">Edit</button>
-                    <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
+                      <button className="btn btn-primary me-2">Edit</button>
+                      <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
                     </div>
-                    <textarea name="" id="" className='form-group'></textarea>
+                    {/* <label htmlFor="" className='ms-3'><strong>Task:</strong></label> */}
+                    {/* <textarea disabled name="" id="" className='form-group'> {getTaskDesc(employee.task_id)} </textarea> */}
                 </div>
             </div>
         </div>

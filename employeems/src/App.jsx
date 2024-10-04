@@ -15,6 +15,7 @@ import EmployeeDetails from './Components/EmployeeDetails'
 import Start from './Components/Start'
 import EmployeeLogin from './Components/EmployeeLogin'
 import AddTask from './Components/AddTask'
+import Task from './Components/Task'
 
 
 
@@ -37,6 +38,7 @@ function App() {
             <Route path='/dasboard/add_employee' element={<AddEmployee />}></Route>
             <Route path='/dasboard/edit_employee/:id' element={<EditEmployee />}></Route>
             <Route path='/dasboard/add_task/:id' element={<AddTask />}></Route>
+            <Route path='/dasboard/task' element={<Task />}></Route>
         </Route>
 
       </Routes>

@@ -1,5 +1,5 @@
 import express from "express";
-import con from "../utils/db.js"
+import con from "../utils/db.js";
 import jwt from "jsonwebtoken"
 import bcrypt from "bcrypt"  //for handling the password hashing in nodejs
 import multer from "multer"  //for handling the image upload in nodejs
@@ -95,7 +95,7 @@ router.post('/add_employee', upload.single("image"), (req, res) => {
             req.body.address,
             req.body.salary,
             req.file.filename,  //For file upload
-            req.body.category_id
+            req.body.category_id,
         ]
         con.query(sql, [values], (err, result) => {
             if(err) return res.json({Status: false, Error: err})
@@ -187,6 +187,14 @@ router.get('/salary_count', (req, res) => {
         return res.json({Status: true, Result: result})
      })
 })
+//task_count API using the SUM to sum up to get total employee salary.
+router.get('/task_count', (req, res) => {
+    const sql = "SELECT COUNT(id) AS task FROM task"
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+     })
+})
 
 
 router.get('/admin_records', (req, res) => {
@@ -203,6 +211,42 @@ router.get('/logout', (req, res) => {
     return res.json({Status: true})
 
 })
+
+
+
+//Creating API for adding a Task
+router.post('/add_task', (req, res) => {
+     const sql = `INSERT INTO task (description, employee_id) VALUES (?)`
+     const values = [
+        req.body.description,
+        req.body.employee_id,
+    ]
+     con.query(sql, [values], (err, result) => { 
+        //console.log(result.data)
+        if(err) return res.json({Status: false, Error: "Task Error"+err})
+            return res.json({Status: true})
+     })
+});
+
+//API for fetching all task.
+router.get('/task', (req, res) => {
+    const sql = "SELECT * FROM task"
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Task Query Error"})
+        return res.json({Status: true, Result: result})
+     })
+})
+
+router.delete('/delete_task/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "DELETE FROM task WHERE id = ?"
+    con.query(sql, [id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+     })
+})
+
+
 
 
 export {router as AdminRouter}
