@@ -67,7 +67,7 @@ const Employee = () => {
                 <th>Salary</th>
                 <th>Profession</th>
                 <th className='text-center'>Photos</th>
-                <th className='text-center'>Action</th>
+                <th className=''>Action</th>
               </tr>
             </thead>
             <tbody>
@@ -82,8 +82,8 @@ const Employee = () => {
                     <td> <img src={`http://localhost:3000/images/` + singleEmployee.image} alt="" className='employee-img'/></td>
                     {/* To access our server-side in our frontend, we go to the index.js and use the "public" folder */}
                     <td>
-                      <Link to={"/dasboard/add_task/"+singleEmployee.id} className='btn btn-warning me-2'>Task</Link>
-                      <Link to={`/dasboard/edit_employee/`+singleEmployee.id} className='btn btn-info me-2'>Edit</Link>
+                      <Link to={"/dasboard/add_task/"+singleEmployee.id} className='btn btn-warning'>Task</Link>
+                      <Link to={`/dasboard/edit_employee/`+singleEmployee.id} className='btn btn-info m-2'>Edit</Link>
                       <button className='btn btn-danger' onClick={()=>{handleDelete(singleEmployee.id)}}>Delete</button>
                     </td> 
                   </tr>

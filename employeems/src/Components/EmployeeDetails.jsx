@@ -8,15 +8,27 @@ const EmployeeDetails = () => {
 
   const [employee, setEmployee] = useState([]);
 
+  //For employee task state.
+  const [employeeTask, setEmployeeTask] = useState([]);
+
   const navigate = useNavigate();
 
-  const {id} = useParams(); //First, we grab the ID from the URL.
+  //First, we grab the ID from the URL.
+  const {id} = useParams(); 
 
   //Next, we fetch the records base on this ID.
   useEffect( () => {
     axios.get('http://localhost:3000/employee/details/'+id)
     .then(result => {
       setEmployee(result.data[0])
+    }).catch(err => console.log(err))
+  }, [])
+
+  //This is used to show the employee task in the employee profile.
+  useEffect( () => {
+    axios.get('http://localhost:3000/employee/employee_task/'+id)
+    .then(result => {
+      setEmployeeTask(result.data[0])
     }).catch(err => console.log(err))
   }, [])
 
@@ -37,6 +49,7 @@ const EmployeeDetails = () => {
     const category = categories.find(cat => cat.id === categoryId);
     return category ? category.name : 'Unknown Profession';
   };
+
 
   // const [task, setTask] = useState([]); // State to store task
   // useEffect(() => {
@@ -67,13 +80,13 @@ const EmployeeDetails = () => {
         }
       })
     }
-    
   }
 
   return (
     <div className='container-fluid'>
       <div className='row flex-nowrap'>
-        <div className='col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-color'>
+        {/* side bar start */}
+        <div className='col-auto col-md-3 col-xl-2 px-sm-2 px-0 bg-color position-fixed' style={{height: "100vh"}}>
           <div className='d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white min-vh-100'>
             <Link 
             to="#"
@@ -110,48 +123,79 @@ const EmployeeDetails = () => {
                   </Link>
                 </li>
                 <li className='w-100'>
-                  <Link to={`/home`}
+                  <Link to={`#`}
                   className='nav-link text-white px-0 align-middle'
                   >
-                    <i className='fs-4 bi-power ms-2'></i>
-                    <span className='ms-2 d-none d-sm-inline'>Logout</span>
+                    <i class=" fs-4 bi bi-suitcase-lg ms-2"></i>
+                    <span className='ms-2 d-none d-sm-inline'>Portfolio Details</span>
                   </Link>
+                </li>
+                <li className='w-100 mt-4'>
+                      <button className="btn btn-danger" onClick={handleLogout}> <i className=' bi-power '></i> Logout</button>
                 </li>
             </ul>
           </div>
         </div>
-        <div className='col m-0 p-0 '>
+        {/* Side bar ends here */}
+        <div className='col m-0 p-0'>
           <div className='p-2 d-flex justify-content-center shadow bg-color'>
             <h4 className='text-white'>
-              Employee Management System
+              Employee Management System 
             </h4>
           </div>
-          <div className="row justify-content-center">
-            <div className="col-md-8 mb-5">
-                <div className="card shadow-sm mt-4">
+          <div className="row d-flex justify-content-center">
+            <div className="col-md-8 mb-5 employee_profile_body">
+                <div className="card shadow-sm mt-4 ">
                     <div className="card-header text-center bg-color text-white border-none">
                         <h3>Employee Profile</h3>
                     </div>
                     <div className="card-body text-center">
-                    <img src={`http://localhost:3000/images/`+employee.image} alt="" className="employee_image rounded-2" />
-                    <h4 className="card-title">{employee.name}</h4>
-                        <p className="card-text text-muted fs-5">{getCategoryName(employee.category_id)}</p>
+                      <img src={`http://localhost:3000/images/`+employee.image} alt="" className="employee_image rounded-2" />
+                      <h4 className="card-title">{employee.name}</h4>
+                      <p className="card-text text-muted fs-5">{getCategoryName(employee.category_id)}</p>
                     </div>
                     <ul className="list-group list-group-flush">
-                        <li className="list-group-item"><strong>Name:</strong> {employee.name} </li>
                         <li className="list-group-item"><strong>Email:</strong> {employee.email} </li>
                         <li className="list-group-item"><strong>Salary:</strong> &#8358;{employee.salary} </li>
-                        {/* <li className="list-group-item"><strong>Task:</strong>  </li> */}
+                        <li className="list-group-item"><strong>Address:</strong> {employee.address} </li>
                     </ul>
-                    <div className="card-footer text-center">
-                      <button className="btn btn-primary me-2">Edit</button>
-                      <button className="btn btn-danger" onClick={handleLogout}>Logout</button>
+                    <div className="text-center">
+                      <h5>TASK DESCRIPTION</h5>
                     </div>
-                    {/* <label htmlFor="" className='ms-3'><strong>Task:</strong></label> */}
-                    {/* <textarea disabled name="" id="" className='form-group'> {getTaskDesc(employee.task_id)} </textarea> */}
+                    <div className=''>
+                      <p className='ms-3'> <strong>Your recent task is: </strong> <br /> 
+                        {employeeTask && employeeTask.description ? employeeTask.description : "No task yet..."}
+                      </p>
+                      {/* This button appears only if there's a task */}
+                        {employeeTask && employeeTask.description && (
+                          <button type="button" className="btn btn-color .btn-color:hover ms-3 m-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+                            Click after completion
+                          </button>
+                        )}
+
+                        
+                        {/* <!-- Modal body--> */}
+                        <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                          <div className="modal-dialog">
+                            <div className="modal-content">
+                              <div className="modal-header">
+                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div className="modal-body">
+                                <h4>Have you completed this task?</h4>
+                              </div>
+                              <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                                <button type="button" className="btn btn-primary">Yes</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {/* End of task modal */}
+                    </div>
                 </div>
             </div>
-        </div>
+          </div>
         </div>
       </div>
     </div>

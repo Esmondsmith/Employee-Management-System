@@ -27,6 +27,7 @@ router.post("/employeelogin", (req, res) => {
 });
 
 
+//API to fetch employee details via id, and display on employee profile.
 router.get('/details/:id', (req, res) => {
     const id = req.params.id;
     const sql = "SELECT * FROM employee WHERE id = ?"
@@ -35,6 +36,18 @@ router.get('/details/:id', (req, res) => {
         return res.json(result)
     })
 });
+
+
+//API to fetch employee task via id, and display on employee profile.
+router.get('/employee_task/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "SELECT * FROM task WHERE employee_id = ?"
+    con.query(sql, [id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Error detected"})
+        return res.json(result)
+    })
+});
+
 
 router.get('/logout', (req, res) => {
     res.clearCookie('token') //This is to clear all cookie upon loggin out. It takes the name of the cookie.

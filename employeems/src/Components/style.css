@@ -10,6 +10,16 @@
     background-color: #124076;
 }
 
+.btn-color {
+    background-color: #124076;
+    color: white;
+}
+
+.btn-color:hover {
+    background-color: #1d5799;
+    color: white;
+}
+
 .loginForm {
     background-color: rgba(1, 32, 93, 0.6);
     color: white;
@@ -51,4 +61,8 @@
     width: 40px;
     border-radius: 50%;
     margin-right: 10px;
+}
+
+.employee_profile_body {
+    margin-left: 100px;
 }
