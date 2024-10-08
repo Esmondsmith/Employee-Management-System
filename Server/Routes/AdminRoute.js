@@ -221,7 +221,8 @@ router.get('/logout', (req, res) => {
 
 })
 
-
+//<Route path='/employee_details/:id/employee_task/' element={<EmployeeTask />}></Route>
+        
 
 //Creating API for adding a Task
 router.post('/add_task', (req, res) => {

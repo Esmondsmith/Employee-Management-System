@@ -39,6 +39,7 @@ router.get('/details/:id', (req, res) => {
 
 
 //API to fetch employee task via id, and display on employee profile in EmployeeDetails componet.
+//Used in EmployeeDetails Component
 router.get('/employee_task/:id', (req, res) => {
     const id = req.params.id;
     const sql = "SELECT * FROM task WHERE employee_id = ?"
@@ -48,10 +49,31 @@ router.get('/employee_task/:id', (req, res) => {
     })
 });
 
-//To get an employee pending task notification on his/her dashboard.
-router.get('/single_employee_task_count/:id', (req, res) => {
+//To get number of all the task of a single employee.
+router.get('/single_employee_all_task/:id', (req, res) => {
     const id = req.params.id;
-    const sql = 'SELECT COUNT(*) AS singleEmployeeTask FROM task WHERE employee_id = ? AND status = "pending" ';
+    const sql = 'SELECT COUNT(*) AS singleEmployeeTotalTask FROM task WHERE employee_id = ?';
+    con.query(sql, [id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    });
+});
+
+//To get number of an employee pending task notification on his/her dashboard.
+router.get('/single_employee_pending_task_count/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = 'SELECT COUNT(*) AS singleEmployeePendingTask FROM task WHERE employee_id = ? AND status = "pending" ';
+    con.query(sql, [id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    });
+});
+
+//Used in EmployeeTask Component
+//To get all task details of a single employee from task table.
+router.get('/single_employee_task_details/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = 'SELECT * FROM task WHERE employee_id = ?';
     con.query(sql, [id], (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
         return res.json({Status: true, Result: result})

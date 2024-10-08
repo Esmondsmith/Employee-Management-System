@@ -4,7 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import "bootstrap-icons/font/bootstrap-icons.css"
 
-const EmployeeDetails = () => {
+const EmployeeTask = () => {
 
   //State to save employee details.
   const [employee, setEmployee] = useState([]);
@@ -25,19 +25,32 @@ const EmployeeDetails = () => {
     }).catch(err => console.log(err))
   }, [])
 
-  //We used this API to fetch all tasks for the task list table. However, we also use it to track pending task and then display all pending tasks one after the other on the employee profile page passing the [id] as dependency.
-  useEffect(() => {
-    axios.get('http://localhost:3000/employee/employee_task/' + id)
+ // Fetch tasks
+ useEffect(() => {
+    axios.get('http://localhost:3000/employee/single_employee_task_details/'+id)
       .then(result => {
-        // Filter the tasks to only include those with status 'pending'
-        const pendingTask = result.data.find(task => task.status === 'pending');
-        setEmployeeTask(pendingTask); // Set only the pending task to state
+        if (result.data.Status) {
+            setEmployeeTask(result.data.Result);
+        } else {
+          alert(result.data.Error);
+        }
       }).catch(err => console.log(err));
-  }, [id]);
-
+  }, [])
+  
   useEffect(() => {
     oneEmployeeTaskCount();
+    employeeAllTask();
   },[]);
+  //To get employee total tasks.
+  const [employeeTotalTask, setEmployeeTotalTask] = useState(0);
+  const employeeAllTask = () => { //We then call this method inside useEffect.
+    axios.get('http://localhost:3000/employee/single_employee_all_task/'+id) //We go to backend to create this API.
+    .then(result => {
+      if(result.data.Status){
+        setEmployeeTotalTask(result.data.Result[0].singleEmployeeTotalTask)
+      } 
+    })
+  }
   // //To get number of pending task in employee profile.
   const [singleEmployeePendingTask, setSingleEmployeePendingTask] = useState(0);
   const oneEmployeeTaskCount = () => { //We then call this method inside useEffect.
@@ -49,40 +62,6 @@ const EmployeeDetails = () => {
     })
   }
   
-
-  // Used to get the logged in employee job category
-  const [categories, setCategories] = useState([]); 
-  useEffect(() => {
-    axios.get('http://localhost:3000/auth/category')
-      .then(result => {
-        if (result.data.Status) {
-          setCategories(result.data.Result);
-        } else {
-          alert(result.data.Error);
-        }
-      }).catch(err => console.log(err));
-  }, []);
-  // Function to get category name by category_id
-  const getCategoryName = (categoryId) => {
-    const category = categories.find(cat => cat.id === categoryId);
-    return category ? category.name : 'Unknown Profession';
-  };
-
-
-  const [taskCompleteResponse, setTaskCompleteResponse] = useState("")
-  //To handle task completed or pending task_status
-  const markTaskAsCompleted = (id) => {
-    axios.put(`http://localhost:3000/employee/task_status/${id}`)
-      .then(response => {
-        if (response.data.Status) {
-          setEmployeeTask(prevTask => ({ ...prevTask, status: 'completed' }));
-        }
-        window.location.reload();
-        setTaskCompleteResponse('Task Completed!')
-      })
-      .catch(err => console.log(err));
-  };
-
 
   const handleLogout = () => {
     const userConfirmed = window.confirm("Are you sure you want to log out?");
@@ -115,11 +94,11 @@ const EmployeeDetails = () => {
             </Link>
             <ul className='nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start' id='menu'>
                 <li className='w-100'>
-                  <Link to="#"
+                  <Link to={"/employee_details/"+id}
                   className='nav-link text-white px-0 align-middle'
                   >
                     <i className='fs-4 bi-person ms-2'></i>
-                    <span className='ms-2 d-none d-sm-inline'>Profile</span>
+                    <span className='ms-2 d-none d-sm-inline'>Back To Profile</span>
                   </Link>
                 </li>
                 <li className='w-100' title={`You have ${singleEmployeePendingTask} task left to complete.`}>
@@ -169,56 +148,56 @@ const EmployeeDetails = () => {
               Employee Management System 
             </h4>
           </div>
-          <div className="row d-flex justify-content-center">
+          <div className="row d-flex justify-content-center ">
             <div className="col-md-8 mb-5 employee_profile_body">
                 <div className="card shadow-sm mt-4 ">
                     <div className="card-header text-center bg-color text-white border-none">
-                        <h3>Employee Profile</h3>
-                    </div>
-                    <div className="card-body text-center">
-                      <img src={`http://localhost:3000/images/`+employee.image} alt="" className="employee_image rounded-2" />
-                      <h4 className="card-title">{employee.name}</h4>
-                      <p className="card-text text-muted fs-5">{getCategoryName(employee.category_id)}</p>
-                    </div>
-                    <ul className="list-group list-group-flush" id="profileDetails">
-                        <li className="list-group-item"><strong>Email:</strong> {employee.email} </li>
-                        <li className="list-group-item"><strong>Salary:</strong> &#8358;{employee.salary} </li>
-                        <li className="list-group-item"><strong>Address:</strong> {employee.address} </li>
-                    </ul>
-                    <div className="text-center">
-                      <h5>TASK DESCRIPTION</h5>
+                        <h3>Employee Task Activities</h3>
                     </div>
                     <div className=''>
-                      <p className='ms-3' > <strong>Your recent task is: </strong> <br /> 
-                        {employeeTask && employeeTask.description ? employeeTask.description : "No task yet..."}
-                      </p>
-                      <h5 className='completed_green ms-3'>{taskCompleteResponse}</h5>
-                      {/* This button appears only if there's a task */}
-                        {employeeTask && employeeTask.description && employeeTask.status !== 'completed' && (
-                          <button type="button" className="btn btn-color .btn-color:hover ms-3 m-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-                            Click after completion
-                          </button>
-                        )}
-                        
-                                              
-                        {/* <!-- Modal body--> */}
-                        <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                          <div className="modal-dialog modal-dialog-centered">
-                            <div className="modal-content">
-                              <div className="modal-header">
-                                <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              </div>
-                              <div className="modal-body">
-                                <h4>Have you completed this task?</h4>
-                              </div>
-                              <div className="modal-footer">
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => markTaskAsCompleted(employeeTask.id)}>Yes</button>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        {/* End of task modal */}
+                        <h3 className='text-center mt-3'>Task Status</h3>
+                        <table className='table table-bordered my-4'>
+                            <thead>
+                                <tr>
+                                <th className='align-top'>Total Recent Task Assigned</th>
+                                <th className='align-top'>Completed</th>
+                                <th className='align-top'>Pending </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{employeeTotalTask}</td>
+                                    <td>{employeeTotalTask - singleEmployeePendingTask}</td>
+                                    <td>{singleEmployeePendingTask}</td> 
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+            
+                    <br /><br /><br />
+
+                    <div className=''>
+                        <h3 className='text-center'>Task Details</h3>
+                        <table className='table table-bordered my-4'>
+                            <thead>
+                                <tr>
+                                <th className='align-top'>Task Description</th>
+                                <th className='align-top'>Date Assigned</th>
+                                <th className='align-top'>Task Status </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {employeeTask.map(singleTask => (
+                            <tr key={singleTask.id}>
+                                <td>{singleTask.status === 'completed' ? (<><del>{singleTask.description}</del></>) : singleTask.description}</td>
+                                <td>{singleTask.date}</td>
+                                <td>{singleTask.status === 'completed' ?  ( <> <p className="completed_green">Completed</p> </>) : ('Pending')}
+                                </td>
+                            </tr>
+                            ))}
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -229,4 +208,5 @@ const EmployeeDetails = () => {
   )
 }
 
-export default EmployeeDetails
+export default EmployeeTask;
+ 

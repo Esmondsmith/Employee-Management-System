@@ -16,7 +16,7 @@ const Task = () => {
           alert(result.data.Error);
         }
       }).catch(err => console.log(err));
-  }, []);
+  }, [])
 
 
   // Fetch employees
