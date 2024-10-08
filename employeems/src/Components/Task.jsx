@@ -72,7 +72,7 @@ const Task = () => {
                 <td>{singleTask.description}</td>
                 <td>{getEmployeeName(singleTask.employee_id)}</td> {/* Display the employee name */}
                 <td>{singleTask.date}</td>
-                <td className='text-muted'> pending </td>
+                <td>{singleTask.status === 'completed' ?  ( <> <p className="completed_green">Completed</p> </>) : ('Pending')}</td>
                 <td>
                   <button className='btn btn-danger' title='delete' onClick={() => handleDelete(singleTask.id)}>
                     <Trash2 />

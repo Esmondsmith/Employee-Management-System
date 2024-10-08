@@ -56,7 +56,7 @@ const AddEmployee = () => {
             }
         })
         .catch(err => console.log(err))
-    }
+    };
 
 
   return (

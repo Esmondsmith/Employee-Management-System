@@ -9,7 +9,7 @@ const Home = () => {
   const [salaryTotal, setSalaryTotal] = useState(0);
   const [categoryTotal, setCategoryTotal] = useState(0);
   const [taskTotal, setTaskTotal] = useState(0);
-
+  const [completedTaskTotal, setCompletedTaskTotal] = useState(0);
 
   const [admins, setAdmins] = useState([])
 
@@ -21,6 +21,7 @@ const Home = () => {
     adminRecords();
     categoryCount();
     taskCount();
+    completedTask()
   },[])
 
   //Function for to get number of admin
@@ -62,8 +63,6 @@ const Home = () => {
     .then(result => {
       if(result.data.Status){
         setCategoryTotal(result.data.Result[0].category)
-      } else {
-
       }
     })
   }
@@ -72,12 +71,17 @@ const Home = () => {
     .then(result => {
       if(result.data.Status){
         setTaskTotal(result.data.Result[0].task)
-      } else {
-
+      } 
+    })
+  }
+  const completedTask = () => { //We then call this method inside useEffect.
+    axios.get('http://localhost:3000/auth/completed_task_count') //We go to backend to create this API.
+    .then(result => {
+      if(result.data.Status){
+        setCompletedTaskTotal(result.data.Result[0].completedTask)
       }
     })
   }
-
 
   const adminRecords = () => {
     axios.get('http://localhost:3000/auth/admin_records') // API created from backend.
@@ -95,6 +99,7 @@ const Home = () => {
     <div>
       <div className='p-3 d-flex justify-content-around mt-3'>
       <div className="row g-3 container-fluid">
+        {/* Card starts from here */}
         <div className="col-md-4">
           <div className='px-3 pt-2 pb-4 border shadow-sm h-100'>
             <div className='text-center pb-1'>
@@ -169,6 +174,14 @@ const Home = () => {
               <h5 className='fw-bolder'>Total:</h5>
               <h5 className='text-primary fw-bolder'> {taskTotal} </h5>
             </div>
+            <div className='d-flex justify-content-between my-2'>
+              <h5 className='fs-6'>COMPLETED TASK:</h5>
+              <h5 className='text-primary fs-6'> {completedTaskTotal} </h5>
+            </div>
+            <div className='d-flex justify-content-between'>
+              <h5 className='fs-6'>PENDING TASK:</h5>
+              <h5 className='text-primary fs-6'> {taskTotal - completedTaskTotal} </h5>
+            </div>
             <div className='mt-4'>
                 <Link to={'/dasboard/task'} className="btn btn-primary">View List</Link>
             </div>
@@ -177,32 +190,32 @@ const Home = () => {
       </div>
     {/* End of card */}
       </div>
-      <div className='mt-4 px-5 pt-3'>
-        <h3>
-          Admin Details
-        </h3>
-        <table className='table'>
-          <thead>
-            <tr>
-              <th>Email</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-              {
-                admins.map( admin => (
-                  <tr>
-                    <td>{admin.email}</td>
-                    <td>
-                      <button className='btn btn-info me-2'>Edit</button>
-                      <button className='btn btn-danger' >Delete</button>
-                    </td>
-                  </tr>
-                ))
-              }
-          </tbody>
-        </table>
-      </div>
+        <div className='mt-4 px-5 pt-3'>
+          <h3>
+            Admin Details
+          </h3>
+          <table className='table'>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                {
+                  admins.map( admin => (
+                    <tr>
+                      <td>{admin.email}</td>
+                      <td>
+                        <button className='btn btn-info me-2'>Edit</button>
+                        <button className='btn btn-danger' >Delete</button>
+                      </td>
+                    </tr>
+                  ))
+                }
+            </tbody>
+          </table>
+        </div>
     </div>
   )
 }

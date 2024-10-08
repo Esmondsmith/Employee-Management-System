@@ -67,8 +67,8 @@ const Dasboard = () => {
                 <li className='w-100'>
                   <Link to="/dasboard/task"
                   className='nav-link text-white px-0 align-middle'
-                  >
-                    <i className='fs-4 bi-person ms-2'></i>
+                  > 
+                    <i className='fs-4 bi bi-person-workspace ms-2'></i>
                     <span className='ms-2 d-none d-sm-inline'>Tasks</span>
                   </Link>
                 </li>
@@ -92,7 +92,7 @@ const Dasboard = () => {
             </ul>
           </div>
         </div>
-        <div className='col m-0 p-0 '>
+        <div className='col m-0 p-0'>
           <div className='p-2 d-flex justify-content-center shadow'>
             <h4>
               Employee Management System

@@ -66,3 +66,23 @@
 .employee_profile_body {
     margin-left: 100px;
 }
+
+.completed_green {
+    color: green;
+    font-weight: 600;
+}
+
+
+.notice {
+    padding: 0px 5px;
+    text-align: center;
+    border: 1px solid white;
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+
+    position: absolute;
+    bottom: 22px;
+    left: 20px;
+    font-size: 10px;
+}

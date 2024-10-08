@@ -15,6 +15,7 @@ const EditEmployee = () => {
         salary: "",
         address: "",
         category_id: "",
+        image: "" //Add this only if edit form include image upload.
     });
 
     //We have this here in order to retain all categories from the DB as required in the select-dropdown.
@@ -40,6 +41,7 @@ const EditEmployee = () => {
                 salary: result.data.Result[0].salary,
                 address: result.data.Result[0].address,
                 category_id: result.data.Result[0].category_id, //This will leave a default value in the select dropdown 
+                image: result.data.Result[0].image,
             })
         }).catch( err => console.log(err))
     }, [])
@@ -47,18 +49,42 @@ const EditEmployee = () => {
     //To use navigation
     const navigate = useNavigate();
 
-    //To handle submission of the edit form.
+    //To handle submission of eddited employee details with image upload.
     const handleSubmit = (e) => {
         e.preventDefault();
-        axios.put('http://localhost:3000/auth/edit_employee/'+id, employee)
-        .then(result => {
-            if(result.data.Status){
-                navigate('/dasboard/employee') //navigate back employee list page
-            } else {
-                alert(result.data.Error)
+        const formData = new FormData(); // Create a FormData object
+            formData.append("name", employee.name);
+            formData.append("email", employee.email);
+            formData.append("salary", employee.salary);
+            formData.append("address", employee.address);
+            formData.append("category_id", employee.category_id);
+            formData.append("image", employee.image); 
+        axios.put(`http://localhost:3000/auth/edit_employee/${id}`, formData, {
+            headers: {
+                "Content-Type": "multipart/form-data", // Ensure proper encoding
             }
-        }).catch(err => console.log(err))
-    }
+        }) .then(result => {
+            if (result.data.Status) {
+                navigate('/dasboard/employee');
+            } else {
+                alert(result.data.Error);
+            }
+        }).catch(err => console.log(err));
+    };
+
+//EDITING WITHOUT INCLUDING IMAGE/FILE FIELD TO EDIT FORM.
+    //To handle submission of the edit form.
+    //const handleSubmit = (e) => {
+    //     e.preventDefault();
+    //     axios.put('http://localhost:3000/auth/edit_employee/'+id, employee)
+    //     .then(result => {
+    //         if(result.data.Status){
+    //             navigate('/dasboard/employee') //navigate back employee list page
+    //         } else {
+    //             alert(result.data.Error)
+    //         }
+    //     }).catch(err => console.log(err))
+    // }
 
 
   return (
@@ -91,6 +117,10 @@ const EditEmployee = () => {
                        return <option value={eachCategory.id}>{eachCategory.name}</option>
                     })} 
                 </select>
+            </div>
+            <div className='col-12 mb-2'>
+                <label htmlFor="inputGroupFile01" className='form-label'> <strong> Choose Image </strong> </label>
+                <input type="file" required id="inputGroupFile01" name="image" className='form-control rounded-0' onChange={ (e)=> setEmployee({...employee, image: e.target.files[0]}) }/>
             </div>
             <div className='col-12'>
                 <button className='btn btn-success w-100 rounded-0'>Upadate Employee</button>

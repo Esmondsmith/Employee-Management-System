@@ -83,6 +83,7 @@ const storage = multer.diskStorage({  //multer.diskStorage take 2 parameters. de
 
 
 //Creating route for adding employee to database
+//upload.single('image') is a middleware used to handle single file uploads for the image field.
 router.post('/add_employee', upload.single("image"), (req, res) => {
     const sql = `INSERT INTO employee (name, email, password, address, salary, image, category_id) VALUES (?)`;
     //hashing the password first before sending data to DB.
@@ -126,15 +127,16 @@ router.get('/employee/:id', (req, res) => {
 }) 
 
 //Route/API to update the employee data after getting a singe employee via id. 
-router.put('/edit_employee/:id', (req, res) => {
+router.put('/edit_employee/:id', upload.single('image'), (req, res) => {
     const id = req.params.id;
-    const sql = "UPDATE employee SET name = ?, email = ?, salary = ?, address = ?, category_id = ? WHERE id = ?"
+    const sql = "UPDATE employee SET name = ?, email = ?, salary = ?, address = ?, category_id = ?, image = ? WHERE id = ?"
     const valuesToUpdate = [
         req.body.name,
         req.body.email,
         req.body.salary,
         req.body.address,
         req.body.category_id,
+        req.file ? req.file.filename : null // Get image filename if uploaded
     ]
     con.query(sql, [...valuesToUpdate, id], (err, result) => {
         if(err) return res.json({Status: false, Error: "Query Error"+err})
@@ -187,7 +189,7 @@ router.get('/salary_count', (req, res) => {
         return res.json({Status: true, Result: result})
      })
 })
-//task_count API using the SUM to sum up to get total employee salary.
+//task_count API to get total employee task.
 router.get('/task_count', (req, res) => {
     const sql = "SELECT COUNT(id) AS task FROM task"
     con.query(sql, (err, result) => {
@@ -195,7 +197,14 @@ router.get('/task_count', (req, res) => {
         return res.json({Status: true, Result: result})
      })
 })
-
+//API endpoint for fetching total completed task count
+router.get('/completed_task_count', (req, res) => {
+    const sql = 'SELECT COUNT(*) AS completedTask FROM task WHERE status = "completed"';
+    con.query(sql, (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    });
+});
 
 router.get('/admin_records', (req, res) => {
     const sql = "SELECT * FROM admin"
@@ -245,7 +254,6 @@ router.delete('/delete_task/:id', (req, res) => {
         return res.json({Status: true, Result: result})
      })
 })
-
 
 
 

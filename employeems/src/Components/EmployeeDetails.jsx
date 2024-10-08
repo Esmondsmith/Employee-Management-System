@@ -6,6 +6,7 @@ import "bootstrap-icons/font/bootstrap-icons.css"
 
 const EmployeeDetails = () => {
 
+  //State to save employee details.
   const [employee, setEmployee] = useState([]);
 
   //For employee task state.
@@ -16,7 +17,7 @@ const EmployeeDetails = () => {
   //First, we grab the ID from the URL.
   const {id} = useParams(); 
 
-  //Next, we fetch the records base on this ID.
+  //Next, we fetch the employee's records base on this ID.
   useEffect( () => {
     axios.get('http://localhost:3000/employee/details/'+id)
     .then(result => {
@@ -24,16 +25,33 @@ const EmployeeDetails = () => {
     }).catch(err => console.log(err))
   }, [])
 
-  //This is used to show the employee task in the employee profile.
-  useEffect( () => {
-    axios.get('http://localhost:3000/employee/employee_task/'+id)
+  //We used this API to fetch all tasks for the task list table. However, we also use it to track pending task and then display all pending tasks one after the other on the employee profile page passing the [id] as dependency.
+  useEffect(() => {
+    axios.get('http://localhost:3000/employee/employee_task/' + id)
+      .then(result => {
+        // Filter the tasks to only include those with status 'pending'
+        const pendingTask = result.data.find(task => task.status === 'pending');
+        setEmployeeTask(pendingTask); // Set only the pending task to state
+      }).catch(err => console.log(err));
+  }, [id]);
+
+  // //To get number of pending employee task in his/her profile.
+  const [singleEmployeePendingTask, setSingleEmployeePendingTask] = useState(0);
+      useEffect(() => {
+        oneEmployeeTaskCount();
+      },[])
+  const oneEmployeeTaskCount = () => { //We then call this method inside useEffect.
+    axios.get('http://localhost:3000/employee/single_employee_task_count/'+id) //We go to backend to create this API.
     .then(result => {
-      setEmployeeTask(result.data[0])
-    }).catch(err => console.log(err))
-  }, [])
+      if(result.data.Status){
+        setSingleEmployeePendingTask(result.data.Result[0].singleEmployeeTask)
+      } 
+    })
+  }
+  
 
-
-  const [categories, setCategories] = useState([]); // State to store categories
+  // Used to get the logged in employee job category
+  const [categories, setCategories] = useState([]); 
   useEffect(() => {
     axios.get('http://localhost:3000/auth/category')
       .then(result => {
@@ -51,22 +69,19 @@ const EmployeeDetails = () => {
   };
 
 
-  // const [task, setTask] = useState([]); // State to store task
-  // useEffect(() => {
-  //   axios.get('http://localhost:3000/auth/task')
-  //     .then(result => {
-  //       if (result.data.Status) {
-  //         setTask(result.data.Result);
-  //       } else {
-  //         alert(result.data.Error);
-  //       }
-  //     }).catch(err => console.log(err));
-  // }, []);
-  // // Function to get category name by category_id
-  // const getTaskDesc = (taskId) => {
-  //   const taskss = task.find(tsk => tsk.id === taskId);
-  //   return taskss ? taskss.description : 'No Task';
-  // };
+  const [taskCompleteResponse, setTaskCompleteResponse] = useState("")
+  //To handle task completed or pending task_status
+  const markTaskAsCompleted = (id) => {
+    axios.put(`http://localhost:3000/employee/task_status/${id}`)
+      .then(response => {
+        if (response.data.Status) {
+          setEmployeeTask(prevTask => ({ ...prevTask, status: 'completed' }));
+        }
+        window.location.reload();
+        setTaskCompleteResponse('Task Completed!')
+      })
+      .catch(err => console.log(err));
+  };
 
 
   const handleLogout = () => {
@@ -81,6 +96,7 @@ const EmployeeDetails = () => {
       })
     }
   }
+
 
   return (
     <div className='container-fluid'>
@@ -99,13 +115,23 @@ const EmployeeDetails = () => {
             </Link>
             <ul className='nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start' id='menu'>
                 <li className='w-100'>
-                  <Link to="#"
+                  <Link to="#profileDetails"
                   className='nav-link text-white px-0 align-middle'
                   >
                     <i className='fs-4 bi-person ms-2'></i>
                     <span className='ms-2 d-none d-sm-inline'>Profile</span>
                   </Link>
                 </li>
+                <li className='w-100' title={`You have ${singleEmployeePendingTask} task left to complete.`}>
+                  <Link to=""
+                  className='nav-link text-white px-0 align-middle position-relative'
+                  >
+                    <i className='fs-4  bi-bell-fill ms-2'></i>
+                    <span className="notice">{singleEmployeePendingTask}</span>
+                    <span className='ms-2 d-none d-sm-inline'>Notifications</span>
+                  </Link>
+                </li>
+
                 <li className='w-100'>
                   <Link to=""
                   className='nav-link text-white px-0 align-middle'
@@ -126,7 +152,7 @@ const EmployeeDetails = () => {
                   <Link to={`#`}
                   className='nav-link text-white px-0 align-middle'
                   >
-                    <i class=" fs-4 bi bi-suitcase-lg ms-2"></i>
+                    <i className=" fs-4 bi bi-suitcase-lg ms-2"></i>
                     <span className='ms-2 d-none d-sm-inline'>Portfolio Details</span>
                   </Link>
                 </li>
@@ -154,7 +180,7 @@ const EmployeeDetails = () => {
                       <h4 className="card-title">{employee.name}</h4>
                       <p className="card-text text-muted fs-5">{getCategoryName(employee.category_id)}</p>
                     </div>
-                    <ul className="list-group list-group-flush">
+                    <ul className="list-group list-group-flush" id="profileDetails">
                         <li className="list-group-item"><strong>Email:</strong> {employee.email} </li>
                         <li className="list-group-item"><strong>Salary:</strong> &#8358;{employee.salary} </li>
                         <li className="list-group-item"><strong>Address:</strong> {employee.address} </li>
@@ -163,20 +189,21 @@ const EmployeeDetails = () => {
                       <h5>TASK DESCRIPTION</h5>
                     </div>
                     <div className=''>
-                      <p className='ms-3'> <strong>Your recent task is: </strong> <br /> 
+                      <p className='ms-3' > <strong>Your recent task is: </strong> <br /> 
                         {employeeTask && employeeTask.description ? employeeTask.description : "No task yet..."}
                       </p>
+                      <h5 className='completed_green ms-3'>{taskCompleteResponse}</h5>
                       {/* This button appears only if there's a task */}
-                        {employeeTask && employeeTask.description && (
+                        {employeeTask && employeeTask.description && employeeTask.status !== 'completed' && (
                           <button type="button" className="btn btn-color .btn-color:hover ms-3 m-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
                             Click after completion
                           </button>
                         )}
-
                         
+                                              
                         {/* <!-- Modal body--> */}
                         <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-                          <div className="modal-dialog">
+                          <div className="modal-dialog modal-dialog-centered">
                             <div className="modal-content">
                               <div className="modal-header">
                                 <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -186,7 +213,7 @@ const EmployeeDetails = () => {
                               </div>
                               <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                                <button type="button" className="btn btn-primary">Yes</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => markTaskAsCompleted(employeeTask.id)}>Yes</button>
                               </div>
                             </div>
                           </div>

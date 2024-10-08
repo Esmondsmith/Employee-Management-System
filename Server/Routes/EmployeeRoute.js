@@ -38,7 +38,7 @@ router.get('/details/:id', (req, res) => {
 });
 
 
-//API to fetch employee task via id, and display on employee profile.
+//API to fetch employee task via id, and display on employee profile in EmployeeDetails componet.
 router.get('/employee_task/:id', (req, res) => {
     const id = req.params.id;
     const sql = "SELECT * FROM task WHERE employee_id = ?"
@@ -48,9 +48,29 @@ router.get('/employee_task/:id', (req, res) => {
     })
 });
 
+//To get an employee pending task notification on his/her dashboard.
+router.get('/single_employee_task_count/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = 'SELECT COUNT(*) AS singleEmployeeTask FROM task WHERE employee_id = ? AND status = "pending" ';
+    con.query(sql, [id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Query Error"+err})
+        return res.json({Status: true, Result: result})
+    });
+});
 
+//To update the status on task table when an employee completes a task.
+router.put('/task_status/:id', (req, res) => {
+    const id = req.params.id;
+    const sql = "UPDATE task SET status = 'completed' WHERE id = ? "
+    con.query(sql, [id], (err, result) => {
+        if(err) return res.json({Status: false, Error: "Error "})
+        return res.json(result)
+    })
+})
+
+//This is to clear all cookie upon loggin out. It takes the name of the cookie.
 router.get('/logout', (req, res) => {
-    res.clearCookie('token') //This is to clear all cookie upon loggin out. It takes the name of the cookie.
+    res.clearCookie('token') 
     return res.json({Status: true})
 
 })
