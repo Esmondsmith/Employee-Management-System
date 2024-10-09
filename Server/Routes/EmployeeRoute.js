@@ -6,7 +6,7 @@ import bcrypt from "bcrypt"  //Used here to compare the hashed password from fro
 
 const router = express.Router();
 
-router.post("/employeelogin", (req, res) => {
+router.post("/employeelogin", (req, res) => { 
     const sql = "SELECT * FROM employee WHERE email = ?"
     con.query(sql, [req.body.email], (err, result) => {
         if (err) { return res.json({ loginStatus: false, Error: "Query Error" })}
@@ -15,7 +15,7 @@ router.post("/employeelogin", (req, res) => {
                 if (err) { return res.json({ loginStatus: false, Error: "Wrong Password" })}
                 if(response){
                     const email = result[0].email;
-                    const token = jwt.sign({role: "admin", email: email}, "jwt_secret_key", {expiresIn: "1d"});
+                    const token = jwt.sign({role: "employee", email: email, id: result[0].id}, "jwt_secret_key", {expiresIn: "1d"});
                     res.cookie('token', token)
                     return res.json({loginStatus: true, id: result[0].id}); //We return the id to be able to receive all employee details via id when we log in
                 }
@@ -26,6 +26,40 @@ router.post("/employeelogin", (req, res) => {
     })
 });
 
+//API to change employee password
+router.put("/change_password", (req, res) => {
+    const { id, currentPassword, newPassword } = req.body;
+    // Fetch the employee's details by id
+    const sql = "SELECT * FROM employee WHERE id = ?";
+    con.query(sql, [id], (err, result) => {
+        if (err) return res.json({ Status: false, Error: "Database error." });
+    //If no result found 
+        if (result.length === 0) {
+            return res.json({ Status: false, Error: "Employee not found." });
+        }
+        const employee = result[0];
+        // Compare the current password with the hashed password stored in DB.
+        bcrypt.compare(currentPassword, employee.password, (err, isMatch) => {
+            if (err) return res.json({ Status: false, Error: "Password error." });
+            //If it doen't match 
+            if (!isMatch) {
+                return res.json({ Status: false, Error: "Current password is incorrect." });
+            }
+            // Hash the new password
+            bcrypt.hash(newPassword, 10, (err, hash) => {
+                if (err) return res.json({ Status: false, Error: "Password encryption error." });
+                
+                // Update the password in the database
+                const updateSql = "UPDATE employee SET password = ? WHERE id = ?";
+                con.query(updateSql, [hash, id], (err, result) => {
+                    if (err) return res.json({ Status: false, Error: "Database update error." });
+                    
+                    return res.json({ Status: true, Message: "Password updated successfully." });
+                });
+            });
+        });
+    });
+});
 
 //API to fetch employee details via id, and display on employee profile.
 router.get('/details/:id', (req, res) => {

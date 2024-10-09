@@ -33,6 +33,7 @@ const Login = () => {
         axios.post('http://localhost:3000/auth/adminlogin', values) //axios.post to post our data. It take the URI of the server/port we are using from our server side, and the initial state of our variable.
         .then(result => {
              if(result.data.loginStatus){
+                localStorage.setItem("valid", true); //For protected route authentication.
                 navigate('/dasboard');    
              } else {
                 setError(result.data.Error);

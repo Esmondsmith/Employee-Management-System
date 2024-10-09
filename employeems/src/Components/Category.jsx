@@ -43,14 +43,18 @@ const Category = () => {
           <table className='table table-bordered'>
             <thead>
               <tr>
+                <th>S/N</th>
                 <th>Name</th>
                 <th>Delete A Category</th>
               </tr>
             </thead>
             <tbody>
               {
-                category.map(singleCategory => (
+                category.map((singleCategory, index) => (
                   <tr>
+                    <td>
+                       {index + 1}
+                    </td>
                     <td>{singleCategory.name}</td>
                     <td>
                       <button className='btn btn-danger' title='delete' onClick={()=>{handleDelete(singleCategory.id)}}><Trash2 /></button>

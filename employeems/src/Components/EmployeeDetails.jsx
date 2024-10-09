@@ -71,7 +71,7 @@ const EmployeeDetails = () => {
 
   const [taskCompleteResponse, setTaskCompleteResponse] = useState("")
   //To handle task completed or pending task_status
-  const markTaskAsCompleted = (id) => {
+  const taskIsCompleted = (id) => {
     axios.put(`http://localhost:3000/employee/task_status/${id}`)
       .then(response => {
         if (response.data.Status) {
@@ -91,7 +91,8 @@ const EmployeeDetails = () => {
         axios.get('http://localhost:3000/employee/logout')
         .then(result => {
         if(result.data.Status){
-          navigate('/home')
+          localStorage.removeItem("valid"); //For protected employee route
+          navigate('/')
         }
       })
     }
@@ -122,7 +123,7 @@ const EmployeeDetails = () => {
                     <span className='ms-2 d-none d-sm-inline'>Profile</span>
                   </Link>
                 </li>
-                <li className='w-100' title={`You have ${singleEmployeePendingTask} task left to complete.`}>
+                <li className='w-100' title={`You have ${singleEmployeePendingTask} pending task.`}>
                   <Link to=""
                   className='nav-link text-white px-0 align-middle position-relative'
                   >
@@ -133,10 +134,10 @@ const EmployeeDetails = () => {
                 </li>
 
                 <li className='w-100'>
-                  <Link to=""
+                  <Link to={`/employee_pass_change/${id}`}
                   className='nav-link text-white px-0 align-middle'
                   >
-                    <i className='fs-4 bi-people ms-2'></i>
+                    <i className='fs-4 bi bi-shield-lock ms-2'></i>
                     <span className='ms-2 d-none d-sm-inline'>Change Password</span>
                   </Link>
                 </li>
@@ -213,7 +214,7 @@ const EmployeeDetails = () => {
                               </div>
                               <div className="modal-footer">
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">No</button>
-                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => markTaskAsCompleted(employeeTask.id)}>Yes</button>
+                                <button type="button" className="btn btn-primary" data-bs-dismiss="modal" onClick={() => taskIsCompleted(employeeTask.id)}>Yes</button>
                               </div>
                             </div>
                           </div>

@@ -4,18 +4,62 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import "bootstrap-icons/font/bootstrap-icons.css"
 
-const EmployeeTask = () => {
 
+
+const EmployeePassChange = () => {
+
+    //To navigate
+    const navigate = useNavigate();
+    //Used to retrieve the ID from the URL.
+    const {id} = useParams(); 
+  
+    
   //State to save employee details.
   const [employee, setEmployee] = useState([]);
 
-  //For employee task state.
-  const [employeeTask, setEmployeeTask] = useState([]);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [responseMessage, setResponseMessage] = useState('');
+  const [messageColor, setMessageColor] = useState('')
 
-  const navigate = useNavigate();
+  
 
-  //First, we grab the ID from the URL.
-  const {id} = useParams(); 
+  const handleChangePasswordSubmission = (e) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      setResponseMessage("New password and confirmation do not match.");
+      setMessageColor("error")
+      return;
+    }
+    axios.put('http://localhost:3000/employee/change_password', {
+      id: id,
+      currentPassword,
+      newPassword
+    })
+    .then(res => {
+      setResponseMessage(res.data.Message || res.data.Error);
+      if(res.data.Status){
+        //navigate('/employee_details/'+id)
+        setResponseMessage("Password Changed Successfully!");
+        setMessageColor("success")
+        setCurrentPassword("")
+        setNewPassword("")
+        setConfirmPassword("")
+    }
+        setTimeout( ()=> {
+            setResponseMessage("");
+            setMessageColor("")
+            //navigate('/employee_details/'+id)
+        }, 2000)
+    })
+    .catch(err => {
+        //console.error(err)
+      setResponseMessage("An error occurred. Please try again.");
+      setMessageColor("error")
+    });
+  };
+
 
   //Next, we fetch the employee's records base on this ID.
   useEffect( () => {
@@ -24,34 +68,12 @@ const EmployeeTask = () => {
       setEmployee(result.data[0])
     }).catch(err => console.log(err))
   }, [])
-
- // Fetch tasks
- useEffect(() => {
-    axios.get('http://localhost:3000/employee/single_employee_task_details/'+id)
-      .then(result => {
-        if (result.data.Status) {
-            setEmployeeTask(result.data.Result);
-        } else {
-          alert(result.data.Error);
-        }
-      }).catch(err => console.log(err));
-  }, [])
   
+
   useEffect(() => {
     oneEmployeeTaskCount();
-    employeeAllTask();
   },[]);
-  //To get employee total tasks.
-  const [employeeTotalTask, setEmployeeTotalTask] = useState(0);
-  const employeeAllTask = () => { //We then call this method inside useEffect.
-    axios.get('http://localhost:3000/employee/single_employee_all_task/'+id) //We go to backend to create this API.
-    .then(result => {
-      if(result.data.Status){
-        setEmployeeTotalTask(result.data.Result[0].singleEmployeeTotalTask)
-      } 
-    })
-  }
-  // //To get number of pending task in employee profile.
+ //To get number of pending task in employee profile.
   const [singleEmployeePendingTask, setSingleEmployeePendingTask] = useState(0);
   const oneEmployeeTaskCount = () => { //We then call this method inside useEffect.
     axios.get('http://localhost:3000/employee/single_employee_pending_task_count/'+id) //We go to backend to create this API.
@@ -110,15 +132,6 @@ const EmployeeTask = () => {
                     <span className='ms-2 d-none d-sm-inline'>Notifications</span>
                   </Link>
                 </li>
-
-                <li className='w-100'>
-                  <Link to={`/employee_pass_change/${id}`}
-                  className='nav-link text-white px-0 align-middle'
-                  >
-                    <i className='fs-4 bi  bi-shield-lock ms-2'></i>
-                    <span className='ms-2 d-none d-sm-inline'>Change Password</span>
-                  </Link>
-                </li>
                 <li className='w-100'>
                   <Link to=""
                   className='nav-link text-white px-0 align-middle'
@@ -144,61 +157,44 @@ const EmployeeTask = () => {
         {/* Side bar ends here */}
         <div className='col m-0 p-0'>
           <div className='p-2 d-flex justify-content-center shadow bg-color'>
-            <h4 className='text-white'>
+            <h3 className='text-white'>
               Employee Management System 
-            </h4>
+            </h3>
           </div>
           <div className="row d-flex justify-content-center ">
             <div className="col-md-8 mb-5 employee_profile_body">
                 <div className="card shadow-sm mt-4 ">
                     <div className="card-header text-center bg-color text-white border-none">
-                        <h3>Employee Task Activities</h3>
+                        <h4>Change Your Password</h4>
                     </div>
-                    <div className=' wrapper-padding'>
-                        <h3 className='text-center mt-3'>Task Status</h3>
-                        <table className='table table-bordered my-4'>
-                            <thead>
-                                <tr>
-                                <th className='align-top'>Total Recent Task Assigned</th>
-                                <th className='align-top'>Completed</th>
-                                <th className='align-top'>Pending </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>{employeeTotalTask}</td>
-                                    <td>{employeeTotalTask - singleEmployeePendingTask}</td>
-                                    <td>{singleEmployeePendingTask}</td> 
-                                </tr>
-                                
-                            </tbody>
-                        </table>
-                    </div>
-            
-                    <br /><br /><br />
 
-                    <div className=' wrapper-padding'>
-                        <h3 className='text-center'>Task Details</h3>
-                        <table className='table table-bordered my-4'>
-                            <thead>
-                                <tr>
-                                <th className='align-top'>Task Description</th>
-                                <th className='align-top'>Date Assigned</th>
-                                <th className='align-top'>Task Status </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {employeeTask.map(singleTask => (
-                            <tr key={singleTask.id}>
-                                <td>{singleTask.status === 'completed' ? (<><del>{singleTask.description}</del></>) : singleTask.description}</td>
-                                <td>{singleTask.date}</td>
-                                <td>{singleTask.status === 'completed' ?  ( <> <p className="completed_green">Completed</p> </>) : ('Pending')}
-                                </td>
-                            </tr>
-                            ))}
-                            </tbody>
-                        </table>
+                    <div className='d-flex justify-content-center align-items-center h-75 my-4'>
+                    <div className='P-5 rounded w-50 border wrapper-padding'>
+                        <h5 className='mb-5'>Change Your Password, {employee.name}. </h5>
+                        <p className={messageColor === 'success' ? 'success-message' : 'error-message'}>
+                            {responseMessage}
+                        </p>
+                        <form onSubmit={handleChangePasswordSubmission}>
+                            <div className='col-12 mb-2'>
+                                <label htmlFor="currentPass" className='form-label'> <strong>Current Password </strong>  </label>
+                                <input type="password" required name="employee-password" id="currentPass" placeholder="Enter Current Password" className='form-control rounded-0' value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)}/>
+                            </div>
+                            <div className='col-12 mb-2'>
+                                <label htmlFor="newPass" className='form-label'> <strong>New Password </strong>  </label>
+                                <input type="password" required name="employee-password" id="newPass" placeholder="Enter New Password" className='form-control rounded-0' value={newPassword} onChange={(e) => setNewPassword(e.target.value)}/>
+                            </div>
+                            <div className='col-12 mb-2'>
+                                <label htmlFor="confirmNewPass" className='form-label'> <strong>Confirm New Password </strong>  </label>
+                                <input type="password" required name="employee-password" id="confirmNewPass" placeholder="Confirm New Password" className='form-control rounded-0' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)}/>
+                            </div>
+                            {/* Button */}
+                            <div className='mb-3'>
+                                <button className='btn btn-success w-100 rounded-0'>Change password</button>
+                            </div>
+                        </form>
                     </div>
+                    </div>
+                    
                 </div>
             </div>
           </div>
@@ -206,7 +202,7 @@ const EmployeeTask = () => {
       </div>
     </div>
   )
+
 }
 
-export default EmployeeTask;
- 
+export default EmployeePassChange

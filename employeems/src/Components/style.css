@@ -26,7 +26,7 @@
     padding: 30px;
 }
 
-.category-wrapper {
+.category-wrapper, .wrapper-padding {
     padding: 25px;
 }
 .employee-wrapper {
@@ -72,7 +72,6 @@
     font-weight: 600;
 }
 
-
 .notice {
     padding: 0px 5px;
     text-align: center;
@@ -85,4 +84,17 @@
     bottom: 22px;
     left: 20px;
     font-size: 10px;
+}
+
+.success-message {
+    color: rgb(12, 185, 12);
+    /* text-align: center; */
+    font-size: 18px;
+    font-weight: 600;
+}
+.error-message {
+    color: red;
+    /* text-align: center; */
+    font-size: 18px;
+    font-weight: 600;
 }

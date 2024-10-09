@@ -17,7 +17,8 @@ const Dasboard = () => {
         axios.get('http://localhost:3000/auth/logout')
         .then(result => {
             if(result.data.Status){
-                navigate('/home');
+              localStorage.removeItem("valid"); //For protected route
+                navigate('/');
             }
         })
         .catch(error => console.error("Logout error:", error));
