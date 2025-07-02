@@ -92,7 +92,7 @@ const EmployeeDetails = () => {
         .then(result => {
         if(result.data.Status){
           localStorage.removeItem("valid"); //For protected employee route
-          navigate('/')
+          navigate('/');
         }
       })
     }

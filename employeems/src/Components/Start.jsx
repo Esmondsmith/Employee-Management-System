@@ -23,7 +23,9 @@ useEffect( () => {
   return (
     <div className='d-flex justify-content-center align-items-center vh-100 loginPage'>
         <div className='P-3 rounded w-25 border loginForm'>
-            <h2 className='text-center'>Login As</h2>
+        <h2 className='text-center fs-3 mb-4'>Employee Management System</h2>
+        <hr />
+            <h2 className='text-center text-primary fs-4'>Login As</h2>
             <div className='d-flex justify-content-between mt-5 mb-2 '>
                 <button type='button' className='btn btn-primary' onClick={ () => {navigate('/employeelogin')}}>Employee</button>
                 <button type='button' className='btn btn-success' onClick={ () => {navigate('/adminlogin')}}>Admin</button>
@@ -34,4 +36,4 @@ useEffect( () => {
   )
 }
 
-export default Start
+export default Start;

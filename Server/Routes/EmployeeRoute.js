@@ -26,10 +26,11 @@ router.post("/employeelogin", (req, res) => {
     })
 });
 
+
 //API to change employee password
 router.put("/change_password", (req, res) => {
     const { id, currentPassword, newPassword } = req.body;
-    // Fetch the employee's details by id
+    // Fetch the employee's details by id 
     const sql = "SELECT * FROM employee WHERE id = ?";
     con.query(sql, [id], (err, result) => {
         if (err) return res.json({ Status: false, Error: "Database error." });
@@ -60,6 +61,7 @@ router.put("/change_password", (req, res) => {
         });
     });
 });
+
 
 //API to fetch employee details via id, and display on employee profile.
 router.get('/details/:id', (req, res) => {
